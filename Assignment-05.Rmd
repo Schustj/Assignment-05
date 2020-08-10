@@ -88,4 +88,4 @@ ggplot(data2, aes(Country, Total_Deaths), fill = "Country") + geom_line(size = 1
 
 
 ##Data Source##    
-China Data Lab, 2020, "Countries-Deaths.tab", World COVID-19 Daily Cases with Basemap, https://doi.org/10.7910/DVN/L20LOT/FZLQRQ, Harvard Dataverse, V22, UNF:6:AntG1aQ3uPjWCuJZ5P2uEA== [fileUNF]
+China Data Lab, 2020, "Countries-Deaths.tab", World COVID-19 Daily Cases with Basemap, [https://doi.org/10.7910/DVN/L20LOT/FZLQRQ](https://doi.org/10.7910/DVN/L20LOT/FZLQRQ), Harvard Dataverse, V22, UNF:6:AntG1aQ3uPjWCuJZ5P2uEA== [fileUNF]
