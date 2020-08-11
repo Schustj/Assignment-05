@@ -24,13 +24,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load_data, echo = FALSE, cache=TRUE, message=FALSE}
 
 wget("https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/L20LOT/FZLQRQ ", destfile = "C:/Users/Jonny/Documents/GitHub/Assignment-05/raw_data/Countries-Deaths.tsv")
-
+raw_data <- read_tsv("raw_data/Countries-Deaths.tsv")
 ```
 
 <!-- (4) Write a chunk that creates a tidy dataset called output/GFI_total_deaths_by_date.csv. This file should have variables named Country, Date, and Total_Deaths. You will need to use several tidy tools to restructure the data with pivot_long() and convert the four-digit codes to dates using lubridate. Filter the data so that only information from Germany, France, and Italy are present. This chuck should not display anything in the final html document. --> 
 
 ```{r tidyup, echo=FALSE, message=FALSE, warning=FALSE}
-raw_data <- read_tsv("raw_data/Countries-Deaths.tsv")
+
 
 data1 <- raw_data %>% pivot_longer(-CNTRYNAME, names_to = "Date", values_to = "Total_Deaths") %>% separate(col = "Date", into = c("Month", "Day"), sep = 2) %>% mutate(Date = mdy(paste(Month, Day, "2020", sep = "-"))) %>% filter(CNTRYNAME %in% c("France", "Germany", "Italy")) %>% rename(Country = `CNTRYNAME`)
 
@@ -45,7 +45,7 @@ write.csv(data1,"C:/Users/Jonny/Documents/GitHub/Assignment-05/output/GFI_total_
 
 raw_data <- read_tsv("raw_data/Countries-Deaths.tsv")
 
-data2 <- raw_data %>% pivot_longer(-CNTRYNAME, names_to = "Date", values_to = "Daily_Deaths") %>% separate(col = "Date", into = c("Month", "Day"), sep = 2) %>% mutate(Date = mdy(paste(Month, Day, "2020", sep = "-"))) %>% filter(CNTRYNAME %in% c("France", "Germany", "Italy")) %>% rename(Country = `CNTRYNAME`) %>% lag(1)
+data2 <- raw_data %>% pivot_longer(-CNTRYNAME, names_to = "Date", values_to = "Daily_Deaths") %>% separate(col = "Date", into = c("Month", "Day"), sep = 2) %>% mutate(Date = mdy(paste(Month, Day, "2020", sep = "-"))) %>% filter(CNTRYNAME %in% c("France", "Germany", "Italy")) %>% rename(Country = `CNTRYNAME`) %>% lag(1) %>% na.omit()
 
 write.csv(data2,"C:/Users/Jonny/Documents/GitHub/Assignment-05/output/GFI_daily_deaths_by_date.csv", row.names = FALSE)
 
@@ -59,7 +59,7 @@ In this assignment I'll be taking data from the Harvard Database regarding COVID
 
 ```{r plot, message=FALSE, echo=FALSE, warning=FALSE}
 
-ggplot(data1, aes(Country, Total_Deaths), fill = "Country") + geom_line(size = 1.5) + scale_y_log10() + labs(y = "Total COVID-19 Deaths") + theme_linedraw()
+ggplot(data1, aes(Date, Total_Deaths)) + geom_line(size = 1.5) + scale_y_log10() + labs(y = "Total COVID-19 Deaths") + theme_linedraw()
 
 ```
 
@@ -67,19 +67,21 @@ ggplot(data1, aes(Country, Total_Deaths), fill = "Country") + geom_line(size = 1
 
 ```{r plot2, message=FALSE, echo=FALSE, warning=FALSE}
 
-ggplot(data2, aes(Country, Daily_Deaths), fill = "Country") + geom_line(size = 1.5) + scale_y_log10() + labs(y = "Daily COVID-19 Deaths") + theme_linedraw()
+ggplot(data2, aes(Date, Daily_Deaths), fill = "Country") + geom_line(size = 1.5) + scale_y_log10() + labs(y = "Daily COVID-19 Deaths") + theme_linedraw()
 
 ```
 
 <!-- (8) Write one last chuck that groups the daily death data by country and finds the maximum number of deaths per day. Use knitr::kable() to display this as a table in your html document. -->  
 
-```{r maxdeath}
+```{r maxdeath, echo=FALSE, message=FALSE}
 
-knitr::kable(data2 %>% group_by(Daily_Deaths) %>% mutate(Max_Deaths = max(Daily_Deaths)))
+knitr::kable(data2 %>% group_by(Country, Date) %>% mutate(Max_Deaths = max(Daily_Deaths)))
 
 ```
 
 ## Conclusion: ##
+
+Looking at these 3 countries we can see that Italy ramps up the fastest with daily deaths due to COVID. Followed by France, then Germany. These 2 countries should ask Germany for some advice on how to reduce the spread of COVID!
 
 <!-- (9) Using markdown, provide an introduction and conclusion section before and after the analysis that you just performed, respectively. These sections should be level 2 headings. --> 
 
