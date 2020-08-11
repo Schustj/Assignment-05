@@ -45,7 +45,7 @@ write.csv(data1,"C:/Users/Jonny/Documents/GitHub/Assignment-05/output/GFI_total_
 
 raw_data <- read_tsv("raw_data/Countries-Deaths.tsv")
 
-data2 <- raw_data %>% pivot_longer(-CNTRYNAME, names_to = "Date", values_to = "Total_Deaths") %>% separate(col = "Date", into = c("Month", "Day"), sep = 2) %>% mutate(Date = mdy(paste(Month, Day, "2020", sep = "-"))) %>% filter(CNTRYNAME %in% c("France", "Germany", "Italy")) %>% rename(Country = `CNTRYNAME`) %>% lag()
+data2 <- raw_data %>% pivot_longer(-CNTRYNAME, names_to = "Date", values_to = "Daily_Deaths") %>% separate(col = "Date", into = c("Month", "Day"), sep = 2) %>% mutate(Date = mdy(paste(Month, Day, "2020", sep = "-"))) %>% filter(CNTRYNAME %in% c("France", "Germany", "Italy")) %>% rename(Country = `CNTRYNAME`) %>% lag(1)
 
 write.csv(data2,"C:/Users/Jonny/Documents/GitHub/Assignment-05/output/GFI_daily_deaths_by_date.csv", row.names = FALSE)
 
@@ -67,7 +67,7 @@ ggplot(data1, aes(Country, Total_Deaths), fill = "Country") + geom_line(size = 1
 
 ```{r plot2, message=FALSE, echo=FALSE, warning=FALSE}
 
-ggplot(data2, aes(Country, Total_Deaths), fill = "Country") + geom_line(size = 1.5) + scale_y_log10() + labs(y = "Daily COVID-19 Deaths") + theme_linedraw()
+ggplot(data2, aes(Country, Daily_Deaths), fill = "Country") + geom_line(size = 1.5) + scale_y_log10() + labs(y = "Daily COVID-19 Deaths") + theme_linedraw()
 
 ```
 
@@ -75,7 +75,7 @@ ggplot(data2, aes(Country, Total_Deaths), fill = "Country") + geom_line(size = 1
 
 ```{r maxdeath}
 
-
+knitr::kable(data2 %>% group_by(Daily_Deaths) %>% mutate(Max_Deaths = max(Daily_Deaths)))
 
 ```
 
